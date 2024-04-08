@@ -1,17 +1,28 @@
 <?php
 //session start  => toda la informacion se guarada en la session
     session_start();
+    include './config/bd.php';
 
     if ($_POST) {
-
-        if (($_POST['usuario']=="admin")&&($_POST['contraseña']=="sistema")) {
-            //linea a cambiar por consulta a la base de datos
-            
-            $_SESSION['usuario']="ok";
-            $_SESSION['nombreUsuario']="admin";
-            header("Location:inicio.php");
-        }else {
-            $mensaje="Error: El usuario o contraseña son incorrectos";
+        $usuario = $_POST['usuario'];
+        $contrasena = $_POST['contraseña']; // Considera encriptar/hash la contraseña
+    
+        try {
+            $sql = "SELECT * FROM usuarios WHERE usuario = :usuario AND contraseña = :contrasena";
+            $consulta = $conexion->prepare($sql);
+            $consulta->execute(['usuario' => $usuario, 'contrasena' => $contrasena]);
+    
+            $resultado = $consulta->fetch(PDO::FETCH_ASSOC);
+    
+            if ($resultado) {
+                $_SESSION['usuario'] = "ok";
+                $_SESSION['nombreUsuario'] = $resultado['nombre'];
+                header("Location: inicio.php");
+            } else {
+                $mensaje = "Error: El usuario o contraseña son incorrectos";
+            }
+        } catch (Exception $ex) {
+            echo "Ocurrió un error al intentar conectar con la base de datos: " . $ex->getMessage();
         }
     }
 ?>
