@@ -20,72 +20,83 @@ include('../config/bd.php');
 
 switch ($accion) {
 
-    case "Agregar":
-        $sentenciaSQL = $conexion->prepare("INSERT INTO `productos` (nombre,imagen,precio,stock,descripcion) VALUES (:nombre,:imagen,:precio,:stock,:descripcion);");
-        $sentenciaSQL->bindParam(':nombre', $txtNombre);
-        $sentenciaSQL->bindParam(':precio', $txtPrecio);
-        $sentenciaSQL->bindParam(':stock', $txtStock);
-        $sentenciaSQL->bindParam(':descripcion', $txtDescripcion);
-
-        $fecha = new DateTime();
-        $nombreArchivo = ($txtImagen != "") ? $fecha->getTimestamp() . "_" . $_FILES["txtImagen"]["name"] : "imagen.jpg";
-
-        $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
-
-        if ($tmpImagen != "") {
-
-            move_uploaded_file($tmpImagen, "https://ferresystem.up.railway.app/img/".$nombreArchivo);
-        }
-
-        $sentenciaSQL->bindParam(':imagen', $nombreArchivo);
-
-        $sentenciaSQL->execute();
-
-        header("Location:productos.php");
-
-        break;
-
-    case "Modificar":
-        $sentenciaSQL = $conexion->prepare("UPDATE productos SET nombre = :nombre, precio = :precio, stock = :stock, descripcion = :descripcion WHERE id=:id");
-        $sentenciaSQL->bindParam(':nombre', $txtNombre);
-        $sentenciaSQL->bindParam(':precio', $txtPrecio);
-        $sentenciaSQL->bindParam(':stock', $txtStock);
-        $sentenciaSQL->bindParam(':descripcion', $txtDescripcion);
-        $sentenciaSQL->bindParam(':id', $txtID);
-        $sentenciaSQL->execute();
-
-        if ($txtImagen != "") {
-
-            $fecha = new DateTime();
-            $nombreArchivo = ($txtImagen != "") ? $fecha->getTimestamp() . "_" . $_FILES["txtImagen"]["name"] : "imagen.jpg";
-            $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
-            //copiado de la imagen al directorio
-            move_uploaded_file($tmpImagen, "https://ferresystem.up.railway.app/img/" . $nombreArchivo);
-
-            $sentenciaSQL = $conexion->prepare("SELECT imagen FROM productos WHERE id=:id");
-            $sentenciaSQL->bindParam(':id', $txtID);
-            $sentenciaSQL->execute();
-            $productos = $sentenciaSQL->fetch(PDO::FETCH_LAZY);
-
-            if (isset($productos["imagen"]) && ($productos["imagen"] != "imagen.jpg")) {
-
-                if (file_exists("https://ferresystem.up.railway.app/img/" . $productos["imagen"])) {
-
-                    unlink("https://ferresystem.up.railway.app/img/" . $productos["imagen"]);
-                }
+        case "Agregar":
+            $sentenciaSQL = $conexion->prepare("INSERT INTO `productos` (nombre, imagen, precio, stock, descripcion) VALUES (:nombre, :imagen, :precio, :stock, :descripcion);");
+            $sentenciaSQL->bindParam(':nombre', $txtNombre);
+            $sentenciaSQL->bindParam(':precio', $txtPrecio);
+            $sentenciaSQL->bindParam(':stock', $txtStock);
+            $sentenciaSQL->bindParam(':descripcion', $txtDescripcion);
+    
+            // Verificar si se ha cargado una imagen
+            if ($txtImagen != "") {
+                // Obtener la extensión del archivo
+                $extension = pathinfo($_FILES["txtImagen"]["name"], PATHINFO_EXTENSION);
+                // Generar un nombre único para la imagen
+                $nombreArchivo = time() . "_" . uniqid() . "." . $extension;
+                // Directorio de destino para la imagen
+                $directorio_destino = "../img/";
+                // Ruta completa de la imagen
+                $ruta_destino = $directorio_destino . $nombreArchivo;
+                // Mover la imagen al directorio de destino
+                move_uploaded_file($_FILES["txtImagen"]["tmp_name"], $ruta_destino);
+                // Asignar el nombre de la imagen al campo en la base de datos
+                $sentenciaSQL->bindParam(':imagen', $nombreArchivo);
+            } else {
+                // Si no se cargó una imagen, asignar un valor predeterminado
+                $nombreArchivo = "imagen.jpg";
+                $sentenciaSQL->bindParam(':imagen', $nombreArchivo);
             }
-
-
-            $sentenciaSQL = $conexion->prepare("UPDATE productos SET imagen = :imagen WHERE id=:id");
-            $sentenciaSQL->bindParam(':imagen', $nombreArchivo);
-            $sentenciaSQL->bindParam(':id', $txtID);
+    
+            // Ejecutar la consulta
             $sentenciaSQL->execute();
-        }
-        header("Location:productos.php");
+    
+            // Redireccionar a la página de productos
+            header("Location:productos.php");
+            break;
+    
 
-        // echo "Presionado botón Modificar";
-        break;
-
+            case "Modificar":
+                // Preparar la consulta para actualizar los campos del producto
+                $sentenciaSQL = $conexion->prepare("UPDATE productos SET nombre = :nombre, precio = :precio, stock = :stock, descripcion = :descripcion WHERE id=:id");
+                $sentenciaSQL->bindParam(':nombre', $txtNombre);
+                $sentenciaSQL->bindParam(':precio', $txtPrecio);
+                $sentenciaSQL->bindParam(':stock', $txtStock);
+                $sentenciaSQL->bindParam(':descripcion', $txtDescripcion);
+                $sentenciaSQL->bindParam(':id', $txtID);
+                $sentenciaSQL->execute();
+            
+                if ($txtImagen != "") {
+                    // Generación del nuevo nombre de archivo para la imagen
+                    $extension = pathinfo($_FILES["txtImagen"]["name"], PATHINFO_EXTENSION);
+                    $nombreArchivo = time() . "_" . uniqid() . "." . $extension;
+            
+                    // Mover la nueva imagen al directorio
+                    $ruta_destino = "../img/" . $nombreArchivo;
+                    move_uploaded_file($_FILES["txtImagen"]["tmp_name"], $ruta_destino);
+            
+                    // Obtener el nombre de la imagen actual en la base de datos
+                    $sentenciaSQL = $conexion->prepare("SELECT imagen FROM productos WHERE id=:id");
+                    $sentenciaSQL->bindParam(':id', $txtID);
+                    $sentenciaSQL->execute();
+                    $producto = $sentenciaSQL->fetch(PDO::FETCH_ASSOC);
+            
+                    // Si existe una imagen previa y no es la imagen por defecto, intentar eliminarla
+                    if ($producto && $producto['imagen'] != "imagen.jpg") {
+                        $ruta_imagen_anterior = "../img/" . $producto["imagen"];
+                        if (file_exists($ruta_imagen_anterior)) {
+                            unlink($ruta_imagen_anterior);
+                        }
+                    }
+            
+                    // Actualizar el campo de la imagen en la base de datos
+                    $sentenciaSQL = $conexion->prepare("UPDATE productos SET imagen = :imagen WHERE id=:id");
+                    $sentenciaSQL->bindParam(':imagen', $nombreArchivo);
+                    $sentenciaSQL->bindParam(':id', $txtID);
+                    $sentenciaSQL->execute();
+                }
+                header("Location:productos.php");
+                break;
+            
     case "Cancelar":
         header("Location:productos.php");
         // echo "Presionado botón Cancelar";
