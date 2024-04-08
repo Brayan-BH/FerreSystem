@@ -114,9 +114,9 @@ switch ($accion) {
 
         if (isset($productos["imagen"]) && ($productos["imagen"] != "imagen.jpg")) {
 
-            if (file_exists("../../img/" . $productos["imagen"])) {
+            if (file_exists("https://ferresystem.up.railway.app/img/" . $productos["imagen"])) {
 
-                unlink("/img/" . $productos["imagen"]);
+                unlink("https://ferresystem.up.railway.app/img/" . $productos["imagen"]);
             }
         }
 
