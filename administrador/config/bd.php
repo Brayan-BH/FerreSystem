@@ -2,7 +2,7 @@
     $host = "localhost";
     $bd = "sistema";
     $usuario = "root";
-    $password = "mysql";
+    $password = "v3jojd123";
 
     define("KEY","sistema");
     define("COD","AES-128-ECB");

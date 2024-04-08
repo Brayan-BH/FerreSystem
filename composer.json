@@ -1,0 +1,18 @@
+{
+    "name": "brayan/ferre-system",
+    "description": "Control de ferreteria",
+    "autoload": {
+        "psr-4": {
+            "Brayan\\FerreSystem\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Brayan-BH",
+            "email": "brayangithub007@gmail.com"
+        }
+    ],
+    "require": {
+        "mpdf/mpdf": "^8.1"
+    }
+}

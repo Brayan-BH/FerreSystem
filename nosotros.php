@@ -2,8 +2,8 @@
 
 
 <div class="jumbotron jumbotron text-justify " >
-    <h1 class="display-4" align="center" >FERRETERIA E INVERSIONES GRUPO TORRES S.R.L.</h1 class>
-    <p class="lead">Venta al por mayor de materiales de construcción, artículos, de ferretería y equipo y materiales de fontanería y calefacción, el local principal está ubicado en PROV.PACHITEA NRO. 248 (A UNOS METROS DE JIRON HUANUCO) JUNIN - HUANCAYO - HUANCAYO</p>
+    <h1 class="display-4 text-center">FERRETERIA E INVERSIONES GRUPO TORRES S.R.L.</h1 class>
+    <p class="lead text-center">Venta al por mayor de materiales de construcción, artículos, de ferretería y equipo y materiales de fontanería y calefacción, el local principal está ubicado en PROV.PACHITEA <br> NRO. 248 (A UNOS METROS DE JIRON HUANUCO) JUNIN - HUANCAYO - HUANCAYO</p>
     <hr class="my-2">
     <div class=" card container bg-secondary text-black" align="center">
         <p class="display-4" >Misión</p>
