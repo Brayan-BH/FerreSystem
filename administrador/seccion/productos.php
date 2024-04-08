@@ -34,7 +34,7 @@ switch ($accion) {
 
         if ($tmpImagen != "") {
 
-            move_uploaded_file($tmpImagen, "../../img/".$nombreArchivo);
+            move_uploaded_file($tmpImagen, "https://ferresystem.up.railway.app/img/".$nombreArchivo);
         }
 
         $sentenciaSQL->bindParam(':imagen', $nombreArchivo);
@@ -60,7 +60,7 @@ switch ($accion) {
             $nombreArchivo = ($txtImagen != "") ? $fecha->getTimestamp() . "_" . $_FILES["txtImagen"]["name"] : "imagen.jpg";
             $tmpImagen = $_FILES["txtImagen"]["tmp_name"];
             //copiado de la imagen al directorio
-            move_uploaded_file($tmpImagen, "../../img/" . $nombreArchivo);
+            move_uploaded_file($tmpImagen, "https://ferresystem.up.railway.app/img/" . $nombreArchivo);
 
             $sentenciaSQL = $conexion->prepare("SELECT imagen FROM productos WHERE id=:id");
             $sentenciaSQL->bindParam(':id', $txtID);
@@ -69,9 +69,9 @@ switch ($accion) {
 
             if (isset($productos["imagen"]) && ($productos["imagen"] != "imagen.jpg")) {
 
-                if (file_exists("../../img/" . $productos["imagen"])) {
+                if (file_exists("https://ferresystem.up.railway.app/img/" . $productos["imagen"])) {
 
-                    unlink("../../img/" . $productos["imagen"]);
+                    unlink("https://ferresystem.up.railway.app/img/" . $productos["imagen"]);
                 }
             }
 
@@ -175,7 +175,7 @@ $listaProductos = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC); //recuperar todos l
 
                     <?php if ($txtImagen != "") { ?>
 
-                        <img class="img-thumbnail rounded mb-3" src="../../img/<?php echo $txtImagen; ?>" width="100" alt="">
+                        <img class="img-thumbnail rounded mb-3" src="https://ferresystem.up.railway.app/img/<?php echo $txtImagen; ?>" width="100" alt="">
 
                     <?php } ?>
 
@@ -220,7 +220,7 @@ $listaProductos = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC); //recuperar todos l
                     <td><?php echo $productos['nombre']; ?></td>
                     <td>
 
-                        <img class="img-thumbnail rounded" src="../../img/<?php echo $productos['imagen']; ?>" width="80" alt="60">
+                        <img class="img-thumbnail rounded" src="https://ferresystem.up.railway.app/img/<?php echo $productos['imagen']; ?>" width="80" alt="60">
 
                     <td><?php echo "S./" . $productos['precio']; ?></td>
                     <td><?php echo $productos['stock']; ?></td>
